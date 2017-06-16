@@ -66,10 +66,16 @@ ros::Subscriber<std_msgs::Int16MultiArray> motorsPwmSub("motors_pwm", &motorsMes
 
 void setup()
 {
+    debug = false;
     Serial3.begin(115200);
+    if (debug) Serial3.println("[I] NH init");
     nh.initNode();
+    if (debug) Serial3.println("[I] Node advertize");
     nh.advertise(motorsEncoderPub);
+    if (debug) Serial3.println("[I] Node subscribe");
     nh.subscribe(motorsPwmSub);
+    if (debug) Serial3.println("[I] Node setup");
+
     encoders_msg.data_length = 2;
     encoders_msg.data  = (uint32_t*)malloc( 2 * sizeof(uint32_t));
     publisher_timer = 0;
@@ -86,6 +92,9 @@ void setup()
 
 void loop() {
     if (millis()>publisher_timer) {
+        if (debug) {
+            Serial3.println("[I] Publish encoders");
+        }
         encoders_msg.data[0]  = Encoder1.getPulsePos();
         encoders_msg.data[1]  = Encoder2.getPulsePos();
         motorsEncoderPub.publish( &encoders_msg );
