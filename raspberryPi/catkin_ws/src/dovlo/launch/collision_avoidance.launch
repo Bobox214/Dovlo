@@ -1,0 +1,7 @@
+<launch>
+    <node pkg="rosserial_python" type="serial_node.py" name="megapi_serial">
+        <param name="port" value="/dev/serial0"/>
+        <param name="baud" value="115200"/>
+        <remap from="cmd_vel" to="cmd_vel_mux/input/teleop"/>
+    </node>
+</launch>
