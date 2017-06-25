@@ -33,7 +33,7 @@ void interruptEncoder2(void) {
 class NewHardware : public ArduinoHardware
 {
     public:
-        NewHardware():ArduinoHardware(&Serial2, 57600){};
+        NewHardware():ArduinoHardware(&Serial2, 115200){};
 };
 ros::NodeHandle_<NewHardware>  nh;
 
@@ -53,11 +53,13 @@ void cmdVelCb( const geometry_msgs::Twist& cmd_vel_msg){
     float vR = v-(w*baseWidth)/2;
     float vLrpm = vL*30/(PI*wheelRadius);
     float vRrpm = vR*30/(PI*wheelRadius);
-    sprintf(msg,"Current speed 1: %d vs %d 2: %d vs %d",
-        int(100*Encoder1.getCurrentSpeed())
-    ,   int(100*-vRrpm)
-    ,   int(100*Encoder2.getCurrentSpeed())
-    ,   int(100*vLrpm)
+    sprintf(msg,"Current speed 1: %d vs %d 2: %d vs %d ; v:%d w:%d",
+        int(1000*Encoder1.getCurrentSpeed())
+    ,   int(1000*-vRrpm)
+    ,   int(1000*Encoder2.getCurrentSpeed())
+    ,   int(1000*vLrpm)
+    ,   int(1000*v)
+    ,   int(1000*w)
     );
     nh.loginfo(msg);
     Encoder1.runSpeed(-vRrpm);
@@ -67,16 +69,11 @@ void cmdVelCb( const geometry_msgs::Twist& cmd_vel_msg){
 
 ros::Subscriber<geometry_msgs::Twist> cmdVelSub("cmd_vel", &cmdVelCb);
 
-void setup()
-{
+
+void waitRosConnection() {
+
     float pidConstants[3];
 
-    nh.initNode();
-    nh.subscribe(cmdVelSub);
-
-    attachInterrupt(Encoder1.getIntNum(), interruptEncoder1, RISING);
-    attachInterrupt(Encoder2.getIntNum(), interruptEncoder2, RISING);
-    
     // Get Node parameters
     while (!nh.connected()) { nh.spinOnce(); };
 
@@ -87,7 +84,7 @@ void setup()
     if (!nh.getParam("~pid", pidConstants, 3)) { 
        nh.loginfo("Using default values for pid");
        pidConstants[0] = 0.18;
-       pidConstants[1] = 0.01;
+       pidConstants[1] = 0;
        pidConstants[2] = 0;
     }
 
@@ -105,10 +102,21 @@ void setup()
     Encoder2.setPulsePos(0);
 
     motors_timer = 0;
+}
 
+void setup() {
+
+    nh.initNode();
+    nh.subscribe(cmdVelSub);
+
+    attachInterrupt(Encoder1.getIntNum(), interruptEncoder1, RISING);
+    attachInterrupt(Encoder2.getIntNum(), interruptEncoder2, RISING);
 }
 
 void loop() {
+
+    if (!nh.connected())
+        waitRosConnection();
 
     if (motors_timer!=0 && millis()>motors_timer) {
         Encoder1.runSpeed(0);
