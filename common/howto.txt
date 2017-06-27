@@ -1,0 +1,2 @@
+# How to create a fake frame
+rosrun tf static_transform_publisher 0 0 0 0 0 0 1 map camera_depth_optical_frame 100
