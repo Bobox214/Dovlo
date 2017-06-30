@@ -4,6 +4,7 @@
 #include <sensor_msgs/PointCloud2.h>
 #include <visualization_msgs/Marker.h>
 #include <geometry_msgs/Point.h>
+#include <geometry_msgs/PointStamped.h>
 #include <pcl_conversions/pcl_conversions.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -18,6 +19,7 @@
 ros::Publisher pub_debug;
 ros::Publisher pub_marker;
 ros::Publisher pub_marker_goal;
+ros::Publisher pub_depth_goal;
 pcl::ConditionalRemoval<pcl::PointXYZ> space_filter;
 
 visualization_msgs::Marker marker;
@@ -98,6 +100,14 @@ void cloud_cb(const sensor_msgs::PointCloud2ConstPtr& cloud_msg) {
     marker_goal.header.frame_id = cloud_msg->header.frame_id;
     marker_goal.header.stamp = ros::Time::now();
     pub_marker_goal.publish(marker_goal);
+
+    geometry_msgs::PointStamped depth_goal;
+    depth_goal.header.frame_id = cloud_msg->header.frame_id;
+    depth_goal.header.stamp = ros::Time::now();
+    depth_goal.point.x = goalX;
+    depth_goal.point.y = 0;
+    depth_goal.point.z = goalZ;
+    pub_depth_goal.publish(depth_goal);
         
     // Convert to ROS data type
     sensor_msgs::PointCloud2 output;
@@ -119,6 +129,7 @@ int main(int argc, char** argv) {
     pub_debug       = nh.advertise<sensor_msgs::PointCloud2>("debug_points",1);
     pub_marker      = nh.advertise<visualization_msgs::Marker>("debug_marker",1);
     pub_marker_goal = nh.advertise<visualization_msgs::Marker>("goal_marker",1);
+    pub_depth_goal  = nh.advertise<geometry_msgs::PointStamped>("depth_follower/goal",1);
     
     // Create the space restriction
     pcl::ConditionAnd<pcl::PointXYZ>::Ptr range_cond(new pcl::ConditionAnd<pcl::PointXYZ>());
