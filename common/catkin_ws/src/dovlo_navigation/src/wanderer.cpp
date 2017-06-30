@@ -13,6 +13,7 @@
 #include <pcl/filters/conditional_removal.h>
 #include <pcl/filters/radius_outlier_removal.h>
 #include <iostream>
+#include <math.h>
 
 ros::Publisher pub_debug;
 ros::Publisher pub_marker;
@@ -22,9 +23,11 @@ pcl::ConditionalRemoval<pcl::PointXYZ> space_filter;
 visualization_msgs::Marker marker;
 visualization_msgs::Marker marker_goal;
 
-#define Z_BACK 0.3
-#define Z_STOP 0.5
-#define Z_FULL 1
+#define Z_BACK   0.3
+#define Z_STOP   0.5
+#define Z_FULL   1
+#define X_LEFT  -0.1
+#define X_RIGHT -0.1
 
 void cloud_cb(const sensor_msgs::PointCloud2ConstPtr& cloud_msg) {
     // Containter for original and filtered data
@@ -86,9 +89,9 @@ void cloud_cb(const sensor_msgs::PointCloud2ConstPtr& cloud_msg) {
         goalX = 0;
         goalZ = -0.3;
     } else {
-        float sp = minZ_mid>Z_FULL ? 1 : (minZ_mid<Z_STOP ? 0 : (minZ_mid-Z_STOP)/0.7);
+        float sp = minZ_mid>Z_FULL ? 1 : (minZ_mid<Z_STOP ? 0 : (minZ_mid-Z_STOP)/(Z_FULL-Z_STOP));
         goalZ = 0.3*sp;
-        goalX = 0.3*(1-sp)*(minZ_right<minZ_left?-1:1);
+        goalX = 0.3*sqrt(1-sp)*(minZ_right<minZ_left?-1:1);
     }
     marker_goal.pose.position.z = goalZ;
     marker_goal.pose.position.x = goalX;
