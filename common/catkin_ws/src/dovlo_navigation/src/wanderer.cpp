@@ -18,18 +18,18 @@
 
 ros::Publisher pub_debug;
 ros::Publisher pub_marker;
-ros::Publisher pub_marker_goal;
 ros::Publisher pub_depth_goal;
 pcl::ConditionalRemoval<pcl::PointXYZ> space_filter;
 
 visualization_msgs::Marker marker;
-visualization_msgs::Marker marker_goal;
 
-#define Z_BACK   0.3
+#define Z_BACK   0.5
 #define Z_STOP   0.5
-#define Z_FULL   1
+#define Z_FULL   0.7
 #define X_LEFT  -0.1
 #define X_RIGHT -0.1
+#define MAX_X    0.1
+#define MAX_Z    0.3
 
 void cloud_cb(const sensor_msgs::PointCloud2ConstPtr& cloud_msg) {
     // Containter for original and filtered data
@@ -89,22 +89,17 @@ void cloud_cb(const sensor_msgs::PointCloud2ConstPtr& cloud_msg) {
     float goalX;
     if (minZ_mid<Z_BACK) {
         goalX = 0;
-        goalZ = -0.3;
+        goalZ = -MAX_Z;
     } else {
         float sp = minZ_mid>Z_FULL ? 1 : (minZ_mid<Z_STOP ? 0 : (minZ_mid-Z_STOP)/(Z_FULL-Z_STOP));
-        goalZ = 0.3*sp;
-        goalX = 0.3*sqrt(1-sp)*(minZ_right<minZ_left?-1:1);
+        goalZ = MAX_Z*sp;
+        goalX = MAX_X*sqrt(1-sp)*(minZ_right<minZ_left?-1:1);
     }
-    marker_goal.pose.position.z = goalZ;
-    marker_goal.pose.position.x = goalX;
-    marker_goal.header.frame_id = cloud_msg->header.frame_id;
-    marker_goal.header.stamp = ros::Time::now();
-    pub_marker_goal.publish(marker_goal);
 
     geometry_msgs::PointStamped depth_goal;
     depth_goal.header.frame_id = cloud_msg->header.frame_id;
-    depth_goal.header.stamp = ros::Time::now();
-    depth_goal.point.x = goalX;
+    //depth_goal.header.stamp = ros::Time::now();
+    depth_goal.point.x = -goalX;
     depth_goal.point.y = 0;
     depth_goal.point.z = goalZ;
     pub_depth_goal.publish(depth_goal);
@@ -128,7 +123,6 @@ int main(int argc, char** argv) {
     // Create a ROS publishers
     pub_debug       = nh.advertise<sensor_msgs::PointCloud2>("debug_points",1);
     pub_marker      = nh.advertise<visualization_msgs::Marker>("debug_marker",1);
-    pub_marker_goal = nh.advertise<visualization_msgs::Marker>("goal_marker",1);
     pub_depth_goal  = nh.advertise<geometry_msgs::PointStamped>("depth_follower/goal",1);
     
     // Create the space restriction
@@ -183,26 +177,6 @@ int main(int argc, char** argv) {
         p.z = 0;
         marker.points.push_back(p);
     }
-
-    marker_goal.ns = "goal";
-    marker_goal.id = 0;
-    marker_goal.type = visualization_msgs::Marker::CUBE;
-    marker_goal.action = visualization_msgs::Marker::ADD;
-    marker_goal.pose.position.x = 0;
-    marker_goal.pose.position.y = 0;
-    marker_goal.pose.position.z = 0;
-    marker_goal.pose.orientation.x = 0.0;
-    marker_goal.pose.orientation.y = 0.0;
-    marker_goal.pose.orientation.z = 0.0;
-    marker_goal.pose.orientation.w = 1.0;
-    marker_goal.scale.x = 0.05;
-    marker_goal.scale.y = 0.05;
-    marker_goal.scale.z = 0.05;
-    marker_goal.color.r = 0.0f;
-    marker_goal.color.g = 1.0f;
-    marker_goal.color.b = 1.0f;
-    marker_goal.color.a = 1.0;
-    marker_goal.lifetime = ros::Duration();
 
     // Spin
     ros::spin();
