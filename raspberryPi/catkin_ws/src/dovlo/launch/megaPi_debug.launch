@@ -1,0 +1,6 @@
+<launch>
+    <node pkg="rosserial_python" type="serial_node.py" name="megapi_serial" output="screen">
+        <param name="port" value="/dev/serial0"/>
+        <param name="baud" value="57600"/>
+    </node>
+</launch>
