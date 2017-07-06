@@ -13,8 +13,9 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 ## This plugin includes Qt widgets, so we must include Qt like so:
-find_package(Qt4 COMPONENTS QtCore QtGui REQUIRED)
-include(${QT_USE_FILE})
+find_package(Qt5Widgets REQUIRED)
+find_package(Qt5Core    REQUIRED)
+include_directories(${Qt5Widgets_INCLUDE_DIRS})
 
 include($ENV{ROS_ROOT}/core/rosbuild/FindPkgConfig.cmake)
 pkg_check_modules(OGRE OGRE)
@@ -27,9 +28,8 @@ add_definitions(-DQT_NO_KEYWORDS)
 
 ## Here we specify which header files need to be run through "moc",
 ## Qt's meta-object compiler.
-qt4_wrap_cpp(MOC_FILES
+qt5_wrap_cpp(MOC_FILES
   src/enable_motor_panel.h
-  src/teleop_panel.h
 )
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -140,7 +140,6 @@ include_directories(
 
 set(SOURCE_FILES
   src/enable_motor_panel.cpp
-  src/teleop_panel.cpp
   ${MOC_FILES}
 )
 

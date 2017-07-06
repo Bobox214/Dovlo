@@ -3,14 +3,6 @@
          type="rviz_plugin_dovlo_megapi::EnableMotorsPanel"
          base_class_type="rviz::Panel">
     <description>
-      A panel widget allow to enable/disable motors on the Dovlo
+      Allow to enable/disable motors on the Dovlo
     </description>
-  </class>
-  <class name="rviz_plugin_dovlo_megapi/Teleop"
-         type="rviz_plugin_dovlo_megapi::TeleopPanel"
-         base_class_type="rviz::Panel">
-    <description>
-      A panel widget allow to enable/disable motors on the Dovlo
-    </description>
-  </class>
 </library>

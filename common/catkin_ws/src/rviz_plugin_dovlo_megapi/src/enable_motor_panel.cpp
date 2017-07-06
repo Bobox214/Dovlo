@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <iostream>
 
 #include <QPushButton>
 #include <QHBoxLayout>
@@ -13,6 +14,7 @@ namespace rviz_plugin_dovlo_megapi {
 EnableMotorsPanel::EnableMotorsPanel( QWidget* parent )
   : rviz::Panel( parent )
 {
+  std::cout << "Creation\n";
   // Next we lay out the "output topic" text entry field using a
   // QLabel and a QLineEdit in a QHBoxLayout.
   QHBoxLayout* layout = new QHBoxLayout;
