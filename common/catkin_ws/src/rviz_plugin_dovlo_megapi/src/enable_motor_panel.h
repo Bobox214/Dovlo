@@ -2,6 +2,8 @@
 
 #include <rviz/panel.h>
 
+#include <QPushButton>
+
 namespace  rviz_plugin_dovlo_megapi {
 
 class EnableMotorsPanel: public rviz::Panel {
@@ -30,6 +32,8 @@ public Q_SLOTS:
 
   // Then we finish up with protected member variables.
 protected:
+
+  QPushButton* enableButton;
 
   // The ROS node handle.
   ros::NodeHandle nh_;

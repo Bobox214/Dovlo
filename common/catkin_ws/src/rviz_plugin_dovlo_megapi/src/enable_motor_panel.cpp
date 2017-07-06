@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <iostream>
 
-#include <QPushButton>
 #include <QHBoxLayout>
 #include <QLabel>
 
@@ -14,23 +13,29 @@ namespace rviz_plugin_dovlo_megapi {
 EnableMotorsPanel::EnableMotorsPanel( QWidget* parent )
   : rviz::Panel( parent )
 {
-  std::cout << "Creation\n";
   // Next we lay out the "output topic" text entry field using a
   // QLabel and a QLineEdit in a QHBoxLayout.
   QHBoxLayout* layout = new QHBoxLayout;
   layout->addWidget( new QLabel( "Motors:" ));
-  QPushButton* enableButton = new QPushButton;
+  enableButton = new QPushButton;
   enableButton->setCheckable(true);
+  enableButton->setAutoFillBackground(true);
   layout->addWidget( enableButton );
 
   setLayout( layout );
 
   connect( enableButton, SIGNAL( toggled(bool) ), this, SLOT( enableMotor(bool) ));
 
+  enableMotor(false);
+
 }
 
 void EnableMotorsPanel::enableMotor( bool enable ) {
-    ROS_INFO("Test");
+  enableButton->setText(enable?"ON":"OFF");
+  enableButton->setStyleSheet(enable?"background-color: lightgreen;":"background-color: red;");
+  std_srvs::SetBool enableBool;
+  enableBool.request.data = enable;
+  ros::service::call("enableMotors",enableBool);
 }
 
 // Save all configuration data from this panel to the given
