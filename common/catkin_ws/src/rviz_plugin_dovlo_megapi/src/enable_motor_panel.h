@@ -35,9 +35,6 @@ protected:
 
   QPushButton* enableButton;
 
-  // The ROS node handle.
-  ros::NodeHandle nh_;
-
 };
 
 } // end namespace

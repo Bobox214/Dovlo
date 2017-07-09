@@ -17,11 +17,6 @@ find_package(Qt5Widgets REQUIRED)
 find_package(Qt5Core    REQUIRED)
 include_directories(${Qt5Widgets_INCLUDE_DIRS})
 
-include($ENV{ROS_ROOT}/core/rosbuild/FindPkgConfig.cmake)
-pkg_check_modules(OGRE OGRE)
-include_directories( ${OGRE_INCLUDE_DIRS} )
-link_directories( ${OGRE_LIBRARY_DIRS} )
-
 ## I prefer the Qt signals and slots to avoid defining "emit", "slots",
 ## etc because they can conflict with boost signals, so define QT_NO_KEYWORDS here.
 add_definitions(-DQT_NO_KEYWORDS)
@@ -169,7 +164,6 @@ add_library(${PROJECT_NAME} ${SOURCE_FILES})
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
-  ${OGRE_LIBRARIES}
 )
 
 #############

@@ -136,6 +136,7 @@ include_directories(
 ## The recommended prefix ensures that target names across packages don't collide
 # add_executable(${PROJECT_NAME}_node src/dovlo_navigation_node.cpp)
 add_executable(wanderer src/wanderer.cpp)
+add_executable(pclSimplify src/pclSimplify.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -149,6 +150,7 @@ add_executable(wanderer src/wanderer.cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(wanderer ${catkin_LIBRARIES})
+target_link_libraries(pclSimplify ${catkin_LIBRARIES})
 
 #############
 ## Install ##
