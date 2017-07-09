@@ -77,8 +77,8 @@ void cmdVelCb( const geometry_msgs::Twist& cmd_vel_msg){
     if (motors_enabled) {
         float v = cmd_vel_msg.linear.x;
         float w = cmd_vel_msg.angular.z;
-        float vL = v+(w*baseWidth)/2;
-        float vR = v-(w*baseWidth)/2;
+        float vL = v-(w*baseWidth)/2;
+        float vR = v+(w*baseWidth)/2;
         float vLrpm = vL*30/(PI*wheelRadius);
         float vRrpm = vR*30/(PI*wheelRadius);
         //sprintf(msg,"Current speed 1: %d vs %d 2: %d vs %d ; v:%d w:%d",
