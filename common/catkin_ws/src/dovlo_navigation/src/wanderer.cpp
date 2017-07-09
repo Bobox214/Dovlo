@@ -23,13 +23,15 @@ pcl::ConditionalRemoval<pcl::PointXYZ> space_filter;
 
 visualization_msgs::Marker marker;
 
-#define Z_BACK   0.5
-#define Z_STOP   0.5
-#define Z_FULL   0.7
-#define X_LEFT  -0.1
-#define X_RIGHT -0.1
-#define MAX_X    0.1
+#define Z_BACK   0.4
+#define Z_STOP   0.6
+#define Z_FULL   0.9
+#define X_LEFT  -0.15
+#define X_RIGHT  0.15
+#define MAX_X    0.08
 #define MAX_Z    0.3
+
+#define max(a,b) ( (a>b) ? (a) : (b) )
 
 void cloud_cb(const sensor_msgs::PointCloud2ConstPtr& cloud_msg) {
     // Containter for original and filtered data
@@ -62,9 +64,9 @@ void cloud_cb(const sensor_msgs::PointCloud2ConstPtr& cloud_msg) {
     float minZ_mid   = 10;
     float minZ_right = 10;
     for (pcl::PointCloud<pcl::PointXYZ>::iterator it = cloudXYZ_2->points.begin(); it < cloudXYZ_2->points.end(); it++) {
-        if ( it->x < -0.1 ) {
+        if ( it->x < X_LEFT) {
             if ( it->z < minZ_left ) minZ_left = it->z;
-        } else if (it->x > 0.1) {
+        } else if (it->x > X_RIGHT) {
             if ( it->z < minZ_right ) minZ_right = it->z;
         } else {
             if ( it->z < minZ_mid ) minZ_mid = it->z;
@@ -91,15 +93,25 @@ void cloud_cb(const sensor_msgs::PointCloud2ConstPtr& cloud_msg) {
         goalX = 0;
         goalZ = -MAX_Z;
     } else {
-        float sp = minZ_mid>Z_FULL ? 1 : (minZ_mid<Z_STOP ? 0 : (minZ_mid-Z_STOP)/(Z_FULL-Z_STOP));
-        goalZ = MAX_Z*sp;
-        goalX = MAX_X*sqrt(1-sp)*(minZ_right<minZ_left?-1:1);
+        float spMid = minZ_mid>Z_FULL ? 1 : (minZ_mid<Z_STOP ? 0 : (minZ_mid-Z_STOP)/(Z_FULL-Z_STOP));
+        if (spMid>0.9) {
+            goalZ = MAX_Z*spMid;
+            goalX = 0;
+        } else if (minZ_right<minZ_left) {
+            float spLeft = minZ_left>Z_FULL ? 1 : (minZ_left<Z_STOP ? 0 : (minZ_left-Z_STOP)/(Z_FULL-Z_STOP));
+            goalZ = MAX_Z*max(spLeft,spMid);
+            goalX = -MAX_X*sqrt(1-spMid);
+        } else {
+            float spRight = minZ_right>Z_FULL ? 1 : (minZ_right<Z_STOP ? 0 : (minZ_right-Z_STOP)/(Z_FULL-Z_STOP));
+            goalZ = MAX_Z*max(spRight,spMid);
+            goalX = MAX_X*sqrt(1-spMid);
+        }
     }
 
     geometry_msgs::PointStamped depth_goal;
     depth_goal.header.frame_id = cloud_msg->header.frame_id;
     //depth_goal.header.stamp = ros::Time::now();
-    depth_goal.point.x = -goalX;
+    depth_goal.point.x = goalX;
     depth_goal.point.y = 0;
     depth_goal.point.z = goalZ;
     pub_depth_goal.publish(depth_goal);

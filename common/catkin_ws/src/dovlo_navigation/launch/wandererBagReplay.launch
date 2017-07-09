@@ -1,0 +1,20 @@
+<launch>
+    <arg name="file" />
+    <!-- start a static transform to set frame used in PCL -->
+    <node pkg="tf" type="static_transform_publisher" name="static_frame" 
+        args="0 0 0 0 0 0 1 map camera_depth_optical_frame 100"
+    />
+    <!-- start rviz -->
+    <node pkg="rviz" type="rviz" name="my_rviz" 
+        args="-d $(find dovlo_navigation)/rviz/viewWanderer.rviz"
+    />
+    <!-- wanderer -->
+    <node pkg="dovlo_navigation" type="wanderer" name="dovlo_wanderer"
+    />
+    <!-- prepare rosbag replay -->
+    <node pkg="rosbag" type="play" name="player" output="screen"
+        args="--pause $(arg file)">
+        <remap  from="/debug_points" to="/camera_depth/points" />
+        <remap  from="/depth_follower/goal" to="/euclid_goal" />
+    </node>
+</launch>
