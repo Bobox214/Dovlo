@@ -14,7 +14,7 @@
     <!-- prepare rosbag replay -->
     <node pkg="rosbag" type="play" name="player" output="screen"
         args="--pause $(arg file)">
-        <remap  from="/debug_points" to="/camera_depth/points" />
+        <remap  from="/debug_points" to="/camera/depth/points" />
         <remap  from="/depth_follower/goal" to="/euclid_goal" />
     </node>
 </launch>
