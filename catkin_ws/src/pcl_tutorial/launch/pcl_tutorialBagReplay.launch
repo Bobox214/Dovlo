@@ -1,0 +1,21 @@
+<launch>
+    <arg name="file" />
+    <!-- start a static transform to set frame used in PCL -->
+    <node pkg="tf" type="static_transform_publisher" name="static_frame" 
+        args="0 0 0 0 0 0 1 map camera_depth_optical_frame 100"
+    />
+    <!-- start rviz -->
+    <node pkg="rviz" type="rviz" name="my_rviz" 
+        args="-d $(find pcl_tutorial)/rviz/viewPcl_tutorial.rviz"
+    />
+    <!-- pcl_tutorial -->
+    <node pkg="pcl_tutorial" type="example" name="example">
+        <remap  from="/input" to="/camera/depth/points" />
+        <remap  from="/output" to="/output" />
+    </node>
+    <!-- prepare rosbag replay -->
+    <node pkg="rosbag" type="play" name="player" output="screen"
+        args="--pause $(arg file)">
+        <remap  from="/debug_points" to="/camera/depth/points" />
+    </node>
+</launch>

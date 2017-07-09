@@ -4,11 +4,7 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
-        - /Global Options1
-        - /Status1
-        - /Grid1
         - /Grid1/Offset1
-        - /PointCloud21
       Splitter Ratio: 0.5
     Tree Height: 843
   - Class: rviz/Selection
@@ -29,7 +25,7 @@ Panels:
     Experimental: false
     Name: Time
     SyncMode: 0
-    SyncSource: PointCloud2
+    SyncSource: Output
 Visualization Manager:
   Class: ""
   Displays:
@@ -51,6 +47,36 @@ Visualization Manager:
       Plane Cell Count: 10
       Reference Frame: <Fixed Frame>
       Value: true
+    - Alpha: 0.200000003
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 1.40800011
+        Min Value: 0.336000025
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz/PointCloud2
+      Color: 0; 170; 0
+      Color Transformer: FlatColor
+      Decay Time: 0
+      Enabled: true
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Max Intensity: 4096
+      Min Color: 0; 0; 0
+      Min Intensity: 0
+      Name: Input
+      Position Transformer: XYZ
+      Queue Size: 10
+      Selectable: true
+      Size (Pixels): 3
+      Size (m): 0.00999999978
+      Style: Flat Squares
+      Topic: /camera/depth/points
+      Unreliable: false
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: true
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
@@ -69,7 +95,7 @@ Visualization Manager:
       Max Intensity: 4096
       Min Color: 0; 0; 0
       Min Intensity: 0
-      Name: PointCloud2
+      Name: Output
       Position Transformer: XYZ
       Queue Size: 10
       Selectable: true
@@ -83,9 +109,9 @@ Visualization Manager:
       Value: true
     - Class: rviz/Axes
       Enabled: true
-      Length: 1
+      Length: 0.5
       Name: Axes
-      Radius: 0.100000001
+      Radius: 0.0199999996
       Reference Frame: <Fixed Frame>
       Value: true
   Enabled: true
@@ -112,7 +138,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 2.01255369
+      Distance: 2.73018718
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1
@@ -126,10 +152,10 @@ Visualization Manager:
       Focal Shape Size: 0.0500000007
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Pitch: -0.259797633
+      Pitch: -0.934796929
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 4.69857359
+      Yaw: 4.68357325
     Saved: ~
 Window Geometry:
   Displays:
