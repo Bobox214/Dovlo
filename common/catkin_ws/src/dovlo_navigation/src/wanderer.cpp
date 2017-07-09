@@ -97,7 +97,7 @@ void cloud_cb(const sensor_msgs::PointCloud2ConstPtr& cloud_msg) {
         if (spMid>0.9) {
             goalZ = MAX_Z*spMid;
             goalX = 0;
-        } else if (minZ_right<minZ_left) {
+        } else if (minZ_right*0.95<minZ_left) {
             float spLeft = minZ_left>Z_FULL ? 1 : (minZ_left<Z_STOP ? 0 : (minZ_left-Z_STOP)/(Z_FULL-Z_STOP));
             goalZ = MAX_Z*max(spLeft,spMid);
             goalX = -MAX_X*sqrt(1-spMid);
