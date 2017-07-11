@@ -23,12 +23,15 @@ pcl::ConditionalRemoval<pcl::PointXYZ> space_filter;
 
 visualization_msgs::Marker marker;
 
+enum State { RUN ,  LEFT , RIGHT };
+State state;
+
 #define Z_BACK   0.4
 #define Z_STOP   0.6
 #define Z_FULL   0.9
 #define X_LEFT  -0.15
 #define X_RIGHT  0.15
-#define MAX_X    0.08
+#define MAX_X    0.1
 #define MAX_Z    0.3
 
 #define max(a,b) ( (a>b) ? (a) : (b) )
@@ -97,14 +100,17 @@ void cloud_cb(const sensor_msgs::PointCloud2ConstPtr& cloud_msg) {
         if (spMid>0.9) {
             goalZ = MAX_Z*spMid;
             goalX = 0;
-        } else if (minZ_right*0.95<minZ_left) {
+	    state = RUN;
+        } else if ( state==LEFT || ( state==RUN && minZ_right<minZ_left ) ) {
             float spLeft = minZ_left>Z_FULL ? 1 : (minZ_left<Z_STOP ? 0 : (minZ_left-Z_STOP)/(Z_FULL-Z_STOP));
             goalZ = MAX_Z*max(spLeft,spMid);
             goalX = -MAX_X*sqrt(1-spMid);
+	    state = LEFT;
         } else {
             float spRight = minZ_right>Z_FULL ? 1 : (minZ_right<Z_STOP ? 0 : (minZ_right-Z_STOP)/(Z_FULL-Z_STOP));
             goalZ = MAX_Z*max(spRight,spMid);
             goalX = MAX_X*sqrt(1-spMid);
+	    state = RIGHT;
         }
     }
 
@@ -128,6 +134,8 @@ int main(int argc, char** argv) {
     // Initialize ROS
     ros::init(argc,argv,"dovlo_wanderer");
     ros::NodeHandle nh;
+
+    state = RUN;
 
     // Create a ROS subscribers
     ros::Subscriber sub = nh.subscribe("camera/depth/points",1,cloud_cb);
