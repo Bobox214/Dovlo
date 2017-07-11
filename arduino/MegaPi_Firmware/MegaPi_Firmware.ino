@@ -23,20 +23,20 @@
 
 #define PI 3.1415
 
-MeEncoderOnBoard Encoder1(SLOT1);
-MeEncoderOnBoard Encoder2(SLOT2);
+MeEncoderOnBoard EncoderL(SLOT1);
+MeEncoderOnBoard EncoderR(SLOT2);
 
-void interruptEncoder1(void) {
-    if (digitalRead(Encoder1.getPortB())==0)
-        Encoder1.pulsePosPlus();
+void interruptEncoderL(void) {
+    if (digitalRead(EncoderL.getPortB())==0)
+        EncoderL.pulsePosPlus();
     else
-        Encoder1.pulsePosMinus();
+        EncoderL.pulsePosMinus();
 }
-void interruptEncoder2(void) {
-    if (digitalRead(Encoder2.getPortB())==0)
-        Encoder2.pulsePosPlus();
+void interruptEncoderR(void) {
+    if (digitalRead(EncoderR.getPortB())==0)
+        EncoderR.pulsePosPlus();
     else
-        Encoder2.pulsePosMinus();
+        EncoderR.pulsePosMinus();
 }
 
 class NewHardware : public ArduinoHardware
@@ -60,8 +60,8 @@ void enableMotorsCb(const std_srvs::SetBoolRequest & req, std_srvs::SetBoolRespo
     motors_enabled = req.data;
     if (!motors_enabled) {
         nh.loginfo("Motors have been stopped by service");
-        Encoder1.runSpeed(0);
-        Encoder2.runSpeed(0);
+        EncoderL.runSpeed(0);
+        EncoderR.runSpeed(0);
         motors_timer = 0;
     } else {
         nh.loginfo("Motors have been enabled by service");
@@ -82,16 +82,16 @@ void cmdVelCb( const geometry_msgs::Twist& cmd_vel_msg){
         float vLrpm = vL*30/(PI*wheelRadius);
         float vRrpm = vR*30/(PI*wheelRadius);
         //sprintf(msg,"Current speed 1: %d vs %d 2: %d vs %d ; v:%d w:%d",
-        //    int(1000*Encoder1.getCurrentSpeed())
+        //    int(1000*EncoderL.getCurrentSpeed())
         //,   int(1000*-vRrpm)
-        //,   int(1000*Encoder2.getCurrentSpeed())
+        //,   int(1000*EncoderR.getCurrentSpeed())
         //,   int(1000*vLrpm)
         //,   int(1000*v)
         //,   int(1000*w)
         //);
         //nh.loginfo(msg);
-        Encoder1.runSpeed(-vRrpm);
-        Encoder2.runSpeed(vLrpm);
+        EncoderL.runSpeed( vLrpm);
+        EncoderR.runSpeed(-vRrpm);
         motors_timer = millis()+motors_timeout;
     }
 }
@@ -123,11 +123,11 @@ void waitRosConnection() {
        wheelRadius = 0.032;
     }
 
-    Encoder1.setSpeedPid(pidConstants[0],pidConstants[1],pidConstants[2]);
-    Encoder2.setSpeedPid(pidConstants[0],pidConstants[1],pidConstants[2]);
+    EncoderL.setSpeedPid(pidConstants[0],pidConstants[1],pidConstants[2]);
+    EncoderR.setSpeedPid(pidConstants[0],pidConstants[1],pidConstants[2]);
 
-    Encoder1.setPulsePos(0);
-    Encoder2.setPulsePos(0);
+    EncoderL.setPulsePos(0);
+    EncoderR.setPulsePos(0);
 
     motors_timer   = 0;
     motors_enabled = 0;
@@ -139,8 +139,8 @@ void setup() {
     nh.subscribe(cmdVelSub);
     nh.advertiseService(enableMotorsServer);
 
-    attachInterrupt(Encoder1.getIntNum(), interruptEncoder1, RISING);
-    attachInterrupt(Encoder2.getIntNum(), interruptEncoder2, RISING);
+    attachInterrupt(EncoderL.getIntNum(), interruptEncoderL, RISING);
+    attachInterrupt(EncoderR.getIntNum(), interruptEncoderR, RISING);
 }
 
 void loop() {
@@ -149,13 +149,13 @@ void loop() {
         waitRosConnection();
 
     if (motors_timer!=0 && millis()>motors_timer) {
-        Encoder1.runSpeed(0);
-        Encoder2.runSpeed(0);
+        EncoderL.runSpeed(0);
+        EncoderR.runSpeed(0);
         motors_timer = 0;
         nh.loginfo("Motors have been stopped after timeout");
     }
 
-    Encoder1.loop();
-    Encoder2.loop();
+    EncoderL.loop();
+    EncoderR.loop();
     nh.spinOnce();
 }
