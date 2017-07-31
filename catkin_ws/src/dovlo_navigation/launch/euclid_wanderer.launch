@@ -1,0 +1,6 @@
+<!-- Launch files for Euclid web-server -->
+<launch>
+    <!-- wanderer -->
+    <node pkg="dovlo_navigation" type="wanderer" name="dovlo_wanderer"
+    />
+</launch>
